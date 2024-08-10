@@ -3,6 +3,7 @@ import { Reset } from "styled-reset";
 
 import Header from "./components/Header";
 import Main from "./components/Main";
+import Write from "./components/Write";
 import { Routes, Route } from "react-router-dom";
 
 const App: React.FC = () => {
@@ -12,6 +13,7 @@ const App: React.FC = () => {
       <Header />
       <Routes>
         <Route path="/" element={<Main />} />
+        <Route path="/write" element={<Write />} />
       </Routes>
     </>
   );

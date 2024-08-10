@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 
 import styled from "styled-components";
 
@@ -28,10 +28,21 @@ const Items = styled.div`
 interface Items {
   item?: React.ReactNode;
   i: number;
+  isActive: boolean;
+  selectClick: (item: React.ReactNode, idx: number) => void;
 }
 
-const GridItem: React.FC<Items> = ({ item, i }) => {
-  return <Items>{item}</Items>;
+const GridItem: React.FC<Items> = ({ item, i, selectClick, isActive }) => {
+  return (
+    <Items
+      onClick={() => {
+        selectClick(item, i);
+      }}
+      className={`${isActive ? "colored" : ""}`}
+    >
+      {item}
+    </Items>
+  );
 };
 
 export default GridItem;
