@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { useEffect } from "react";
 
 import styled from "styled-components";
 
@@ -23,22 +23,39 @@ const Items = styled.div`
     background-color: #333;
     color: #fff;
   }
+  &.redColor {
+    background-color: red;
+    color: #fff;
+  }
 `;
 
 interface Items {
   item?: React.ReactNode;
   i: number;
   isActive: boolean;
-  selectClick: (item: React.ReactNode, idx: number) => void;
+  isEntered: boolean;
+  selectClick: (
+    e: React.MouseEvent<HTMLDivElement>,
+    item: React.ReactNode,
+    idx: number
+  ) => void;
 }
 
-const GridItem: React.FC<Items> = ({ item, i, selectClick, isActive }) => {
+const GridItem: React.FC<Items> = ({
+  item,
+  i,
+  selectClick,
+  isActive,
+  isEntered,
+}) => {
   return (
     <Items
-      onClick={() => {
-        selectClick(item, i);
+      onClick={(e) => {
+        selectClick(e, item, i);
       }}
-      className={`${isActive ? "colored" : ""}`}
+      className={`${isActive ? "colored" : ""} ${
+        isActive && isEntered ? "redColor" : ""
+      }`}
     >
       {item}
     </Items>
