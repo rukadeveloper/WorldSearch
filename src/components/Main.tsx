@@ -1,270 +1,84 @@
-import React, { useEffect, useState, useRef } from "react";
+import React from "react";
 
 import styled from "styled-components";
-import GridItem from "./GridItem";
+import GridItems from "./GridItems";
 
 const Mains = styled.main`
   padding: 0 12.5%;
-  display: flex;
-  > div {
-    > h2 {
-      padding-top: 100px;
-      font-size: 30px;
-      font-weight: 700;
-    }
-    > .puzzle_grid {
-      width: 600px;
-      margin-top: 30px;
-      display: flex;
-      flex-wrap: wrap;
-    }
+  > h2 {
+    padding-top: 100px;
+    font-size: 30px;
+    font-weight: 700;
   }
-  > .answerList {
-    padding-top: 170px;
-    span {
-      display: block;
-      font-size: 20px;
-      padding-bottom: 15px;
-      &.line {
-        text-decoration: line-through;
+  > .wrapper {
+    margin-top: 20px;
+    display: flex;
+    .problemLists {
+      padding-left: 15px;
+      padding-top: 10px;
+      span {
+        display: block;
+        padding-bottom: 15px;
+        font-size: 18px;
       }
     }
   }
 `;
 
-type itemType = {
-  item: React.ReactNode;
-  index: number | null;
-};
-
-type ansType = {
-  content: string;
-  realAnswer: React.ReactNode[];
-  realIndex: number[][];
-  isAnswer: boolean;
-  index: number;
-};
-
 const Main: React.FC = () => {
-  const alpha =
-    "SMEMARGEHRPLMOCMRBURNSASIKOSENELESONMTRRSNGALISAAHUERSRYTATRHESOSEATEPPLORTTULMNONRUMSYTNPPRAARAEUWOYAAMCMIARTIRNSRPLELMBELCNTAANOAEELLOERLTEMBMSCISLAPTDEARRCEOIBHYKABR";
+  const Board = [
+    ["N", "O", "S", "U", "R", "D", "M", "T", "T", "R", "Y", "S"],
+    ["T", "U", "E", "F", "R", "E", "E", "A", "E", "S", "E", "W"],
+    ["S", "R", "T", "L", "R", "B", "N", "R", "E", "S", "S", "E"],
+    ["S", "S", "V", "G", "R", "R", "H", "L", "I", "U", "R", "E"],
+    ["S", "O", "I", "O", "E", "O", "D", "L", "L", "R", "O", "R"],
+    ["E", "N", "R", "S", "O", "E", "O", "A", "O", "W", "H", "O"],
+    ["L", "G", "O", "E", "M", "I", "N", "E", "V", "E", "E", "T"],
+    ["R", "I", "T", "R", "O", "U", "B", "L", "E", "I", "T", "C"],
+    ["A", "I", "S", "E", "O", "T", "H", "I", "S", "G", "I", "I"],
+    ["E", "N", "O", "C", "O", "E", "O", "C", "T", "R", "H", "P"],
+    ["F", "R", "B", "E", "L", "O", "N", "G", "O", "E", "W", "L"],
+    ["T", "O", "G", "E", "T", "H", "E", "R", "R", "E", "L", "R"],
+    ["S", "R", "G", "M", "E", "A", "N", "E", "Y", "R", "R", "E"],
+    ["E", "S", "H", "O", "N", "A", "N", "O", "R", "R", "H", "I"],
+  ];
 
-  const isFirstCompassion = useRef(true);
+  const problemList = [
+    "RED",
+    "OUR SONG",
+    "TOGETHER",
+    "TROUBLE",
+    "FEARLESS",
+    "MEAN",
+    "MINE",
+    "WHITE HORSE",
+    "RONAN",
+    "PICTURE",
+    "BELONG",
+  ];
 
-  const answerList = ["HOMER", "MARGE", "BART"];
+  const correctList = [];
 
-  const [isEntered, setIsEntered] = useState<boolean>(false);
+  const selectClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const target = e.target as HTMLDivElement;
 
-  const [itemArray, setItemArray] = useState<itemType[]>([]);
-
-  const [indexArr, setIndexArr] = useState<(number | null)[]>([]);
-
-  const [answerArr, setAnswerArr] = useState<ansType[]>([]);
-
-  const selectClick = (
-    e: React.MouseEvent<HTMLDivElement>,
-    item: React.ReactNode,
-    idx: number
-  ) => {
-    if (!isEntered) {
-      setItemArray((prev) => [...prev, { item: item, index: idx }]);
-    } else {
-      e.preventDefault();
-    }
+    target.classList.add("keyon");
   };
-
-  const checkAnswer = () => {
-    console.log("체크하기~~~~");
-    if (answerArr.length !== 0 && itemArray.length !== 0) {
-      const updated = answerArr.map((aa) => {
-        const isCorrect = Array.from(aa.content).every(
-          (aaa, i) => aaa === itemArray[i].item
-        );
-        let realAnswerOne: React.ReactNode[] = [];
-        let realAnswerTwo: React.ReactNode[] = [];
-        let realIndexOne: number[] = [];
-        let realIndexTwo: number[][] = [];
-
-        if (isCorrect) {
-          Array.from(aa.content).map((aaaa, ii) => {
-            if (aaaa === itemArray[ii].item) {
-              realAnswerOne.push(aaaa);
-              realIndexOne.push(itemArray[ii]?.index!);
-            }
-          });
-        }
-
-        realAnswerTwo.push(realAnswerOne);
-        realIndexTwo.push(realIndexOne);
-        return {
-          ...aa,
-          isAnswer: isCorrect,
-          realAnswer: realAnswerTwo,
-          realIndex: realIndexTwo,
-        };
-      });
-      setAnswerArr(updated);
-    }
-  };
-
-  const keyDown = (e: KeyboardEvent) => {
-    if (e.keyCode === 13) {
-      setIsEntered(true);
-    }
-  };
-
-  const disting = (i: number): boolean => {
-    return indexArr.includes(i);
-  };
-
-  useEffect(() => {
-    if (itemArray.length !== 0) {
-      // [{},{}]
-      if (itemArray.length >= 2) {
-        const dist =
-          itemArray[itemArray.length - 1]?.index! -
-          itemArray[itemArray.length - 2]?.index!;
-        if (itemArray.length == 2) {
-          if (
-            dist === 1 ||
-            dist === -1 ||
-            dist === 11 ||
-            dist === 12 ||
-            dist === 13 ||
-            dist === -11 ||
-            dist === -12 ||
-            dist === -13
-          ) {
-            // 아무것도 하지 않음
-          } else {
-            itemArray.pop();
-          }
-        } else if (itemArray.length > 2) {
-          const otherDist = itemArray[1].index! - itemArray[0].index!;
-          if (otherDist == 1 || otherDist == -1) {
-            if (
-              dist === 1 ||
-              dist === -1 ||
-              dist === -1 * (itemArray.length - 1) ||
-              dist === itemArray.length - 1
-            ) {
-              // 아무것도 하지 않음
-            } else {
-              itemArray.pop();
-            }
-          } else if (otherDist === -13 || otherDist === 13) {
-            if (
-              dist === -13 ||
-              dist === 13 ||
-              dist === 13 * (itemArray.length - 1) ||
-              dist === -13 * (itemArray.length - 1)
-            ) {
-              // 아무것도 하지 않음
-            } else {
-              itemArray.pop();
-            }
-          } else if (otherDist === -11 || otherDist === 11) {
-            if (
-              dist === -11 ||
-              dist === 11 ||
-              dist === -11 * (itemArray.length - 1) ||
-              dist === 11 * (itemArray.length - 1)
-            ) {
-              // 아무것도 안한다.
-            } else {
-              itemArray.pop();
-            }
-          } else if (otherDist === 12 || otherDist === -12) {
-            if (
-              dist === 12 ||
-              dist === -12 ||
-              dist === 12 * (itemArray.length - 1) ||
-              dist === -12 * (itemArray.length - 1)
-            ) {
-              // not do
-            } else {
-              itemArray.pop();
-            }
-          }
-        }
-      }
-      setIndexArr((prev) => {
-        // itemArray에서 새로운 인덱스만 필터링
-        const newIndices = itemArray
-          .map((v) => v.index) // 인덱스 추출
-          .filter((index) => index !== null && !prev.includes(index)); // 이전 상태에 없는 인덱스만 필터링
-
-        // 새로운 상태를 반환
-        return [...prev, ...newIndices];
-      });
-      console.log(itemArray);
-    }
-  }, [itemArray]);
-
-  useEffect(() => {
-    if (indexArr.length !== 0) {
-      console.log(indexArr);
-    }
-  }, [indexArr]);
-
-  useEffect(() => {
-    window.addEventListener("keydown", keyDown);
-
-    if (isEntered) {
-      checkAnswer();
-    }
-
-    return () => {
-      window.removeEventListener("keydown", keyDown);
-    };
-  }, [isEntered]);
-
-  useEffect(() => {
-    if (itemArray.length === 0) {
-      answerList.map((al, i) => {
-        setAnswerArr((prev) => [
-          ...prev,
-          {
-            content: al,
-            isAnswer: false,
-            index: i,
-            realAnswer: [],
-            realIndex: [],
-          },
-        ]);
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    if (answerArr.length !== 0) {
-      console.log(answerArr);
-    }
-  }, [answerArr]);
 
   return (
     <Mains>
-      <div>
-        <h2>World Search Game</h2>
+      <h2>World Search Game</h2>
+      <div className="wrapper">
         <div className="puzzle_grid">
-          {Array.from(alpha).map((item: string, i: number) => (
-            <GridItem
-              item={item}
-              key={i}
-              i={i}
-              isActive={disting(i)}
-              selectClick={selectClick}
-              isEntered={isEntered}
-            />
+          {Board.map((bd, id) => (
+            <GridItems bd={bd} selectClick={selectClick} key={id} />
           ))}
         </div>
-      </div>
-      <div className="answerList">
-        {answerArr.map((av, i) => (
-          <span key={i} className={`${av.isAnswer ? "line" : ""}`}>
-            {av.content}
-          </span>
-        ))}
+        <div className="problemLists">
+          {problemList.map((pl, idx) => (
+            <span key={idx}>{pl}</span>
+          ))}
+        </div>
       </div>
     </Mains>
   );

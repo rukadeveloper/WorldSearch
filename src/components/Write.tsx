@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import styled from "styled-components";
+
+import { getDatabase, ref, set } from "firebase/database";
 
 const Writer = styled.div`
   max-width: 80%;
@@ -20,7 +22,8 @@ const Writer = styled.div`
       input {
         display: block;
       }
-      label {
+      label,
+      h2 {
         font-size: 25px;
       }
       input {
@@ -28,6 +31,36 @@ const Writer = styled.div`
         padding: 10px 5px;
         margin-top: 15px;
         font-size: 18px;
+        outline: none;
+      }
+    }
+    > div.wordList {
+      .wordLists {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 15px;
+        > div {
+          width: 25%;
+          margin-left: -1px;
+          margin-top: -1px;
+          > label {
+            display: none;
+          }
+          > input {
+            width: 100%;
+            margin: 0;
+            box-sizing: border-box;
+          }
+        }
+      }
+    }
+    > .submitBtn {
+      button {
+        width: 100%;
+        padding: 20px 0;
+        font-size: 18px;
+        border: none;
+        background-color: rgb(247, 193, 9);
       }
     }
   }
@@ -51,6 +84,15 @@ const Write: React.FC = () => {
         <div className="desc">
           <label htmlFor="desc">Description</label>
           <input type="text" id="desc" name="desc" />
+        </div>
+
+        <div className="wordList">
+          <h2>Word List</h2>
+          <div className="wordLists"></div>
+        </div>
+
+        <div className="submitBtn">
+          <button type="submit">Submit</button>
         </div>
       </form>
     </Writer>
